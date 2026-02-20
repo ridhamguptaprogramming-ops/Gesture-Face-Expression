@@ -1,0 +1,44 @@
+{
+  "global": {
+    "camera_index": 0,
+    "cooldown_ms": 800,
+    "confidence_threshold": 0.8,
+    "show_preview": true
+  },
+  "mappings": {
+    "gesture": {
+      "open_palm": {
+        "action": "switch_window",
+        "params": {
+          "keys": [
+            "alt",
+            "tab"
+          ]
+        }
+      },
+      "thumbs_up": {
+        "action": "open_website",
+        "params": {
+          "url": "https://www.google.com"
+        }
+      },
+      "fist": {
+        "action": "print_message",
+        "params": {
+          "message": "Fist detected"
+        }
+      }
+    },
+    "expression": {
+      "smile": {
+        "action": "capture_photo",
+        "params": {
+          "output_dir": "captures"
+        }
+      },
+      "surprised": {
+        "action": "toggle_armed"
+      }
+    }
+  }
+}
