@@ -1,20 +1,23 @@
 # Gesture + Face Expression Controlled AI System
 
-This project is a Python MVP for:
+Python MVP for real-time camera control using:
 
-- Camera input
-- Hand gesture detection
-- Face expression detection
-- Gesture/expression to action mapping
-- OS/browser actions
+- Hand gestures
+- Face expressions
+- Configurable action mapping
 
-## Features
+## What It Does
 
-- `MediaPipe Hands` for gesture recognition (`open_palm`, `thumbs_up`, `fist`)
-- `MediaPipe Face Mesh` heuristics for expression recognition (`smile`, `surprised`)
-- Config-driven mapping in `config/mappings.json`
-- Cooldown + confidence threshold gating
-- State machine: `IDLE`, `ARMED`, `EXECUTE`
+- Detects hand gestures with `MediaPipe Hands`:
+  - `open_palm`
+  - `thumbs_up`
+  - `fist`
+- Detects face expressions with `MediaPipe Face Mesh` heuristics:
+  - `smile`
+  - `surprised`
+- Maps detections to actions from `config/mappings.json`
+- Uses cooldown and confidence threshold controls
+- Runs a simple state machine: `IDLE`, `ARMED`, `EXECUTE`
 
 ## Quick Start
 
@@ -22,23 +25,32 @@ This project is a Python MVP for:
 python3 -m venv .venv
 source .venv/bin/activate
 pip install -r requirements.txt
-python run.py --config config/mappings.json
+make run
 ```
 
-Press `q` to stop.
+Press `q` to quit.
 
-## Default Mapping
+## Make Targets
+
+```bash
+make install   # install dependencies
+make run       # run app
+make test      # run unit tests
+make clean     # remove local cache/captures
+```
+
+## Default Controls
 
 - `open_palm` -> `switch_window` (`alt+tab`)
-- `thumbs_up` -> `open_website`
-- `smile` -> `capture_photo` (saved in `captures/`)
-- `surprised` -> `toggle_armed`
+- `thumbs_up` -> `open_website` (default: Google)
+- `smile` -> `capture_photo` (saves to `captures/`)
+- `surprised` -> `toggle_armed` (`ARMED` <-> `IDLE`)
 
-## Configure Actions
+## Configure Mappings
 
 Edit `config/mappings.json`.
 
-Example action entry:
+Example:
 
 ```json
 "thumbs_up": {
@@ -57,8 +69,37 @@ Supported actions:
 - `print_message`
 - `toggle_armed`
 
-## Notes
+## Project Layout
 
-- On macOS, give camera and Accessibility permissions to Terminal/Python for keypress actions.
-- Gesture and expression heuristics vary by camera angle and lighting; tune thresholds in code/config for your setup.
+```text
+run.py
+config/mappings.json
+src/gesture_face_ai/
+  main.py         # app loop
+  camera.py       # camera wrapper
+  gesture.py      # hand gesture detector
+  expression.py   # facial expression detector
+  mapper.py       # cooldown/threshold/state mapping
+  actions.py      # action execution
+  config.py       # config loading/validation
+tests/test_mapper.py
+```
 
+## macOS Permissions
+
+For full behavior on macOS:
+
+- Allow camera access for Terminal/Python.
+- Allow Accessibility access for Terminal/Python (needed for keypress actions like `alt+tab`).
+
+## Troubleshooting
+
+- `ModuleNotFoundError: cv2`:
+  - Run `pip install -r requirements.txt`.
+- Camera fails to open:
+  - Try changing `global.camera_index` in `config/mappings.json` (for example `0` to `1`).
+- Gestures trigger too often:
+  - Increase `global.cooldown_ms`.
+- Gesture/expression not detected reliably:
+  - Improve lighting and face/hand framing.
+  - Adjust classifier thresholds in code if needed.
